@@ -9,7 +9,7 @@ namespace Assets.Scripts
 
         public NeuralNetwork(int hiddenLayers)
         {
-            layers.Add()
+            layers.Add(new Layer());
         }
     }
 

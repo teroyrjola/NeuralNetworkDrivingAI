@@ -5,31 +5,13 @@ namespace Assets.Scripts
     public class NeuralNetwork
     {
         public int hiddenLayers;
-        public List<Layer> layers;
+        public List<ILayer> layers;
 
         public NeuralNetwork(int hiddenLayers)
         {
-            layers.Add(new Layer());
+            layers.Add(new InputLayer(5));
+            layers.Add(new HiddenLayer(7));
+            layers.Add(new OutputLayer(2));
         }
-    }
-
-    interface ILayer
-    {
-        List<Neuron> neurons { get; set; }
-    }
-
-    public class HiddenLayer : ILayer
-    {
-        public List<Neuron> neurons { get; set; }
-
-        public HiddenLayer(int numberOfNeurons)
-        {
-            for (int i = 0; i < numberOfNeurons; i++)
-            {
-                neurons.Add(new Neuron());
-            }
-        }
-
-
     }
 }

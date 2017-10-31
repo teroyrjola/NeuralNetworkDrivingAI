@@ -1,16 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
     public float acceleration;
     public float steering;
+    private Sensor[] sensors;
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sensors = GetComponentsInChildren<Sensor>();
     }
 
     void FixedUpdate()

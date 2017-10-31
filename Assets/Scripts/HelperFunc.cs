@@ -9,5 +9,12 @@ namespace Assets.Scripts
         {
             return Random.NextDouble() * 2 - 1;
         }
+
+        public static double SigmoidFunction(double xValue)
+        {
+            if (xValue > 10) return 1.0;
+            else if (xValue < -10) return 0.0;
+            else return 1.0 / (1.0 + Math.Exp(-xValue));
+        }
     }
 }

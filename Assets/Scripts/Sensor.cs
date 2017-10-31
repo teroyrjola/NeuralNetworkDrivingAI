@@ -22,7 +22,7 @@ namespace Assets.Scripts
                 sensorHit.distance = max_distance;
 
             this.Output = sensorHit.distance;
-            sensor.transform.position = (Vector2)this.transform.position + direction * sensorHit.distance; //Set position of visual cross to current reading
+            sensor.transform.position = (Vector2)this.transform.position + direction * sensorHit.distance; 
         }
 
 

@@ -15,5 +15,10 @@ namespace Assets.Scripts
             OutputNeuron = outputNeuron;
             Weight = HelperFunc.RandomWeight();
         }
+
+        public void Calculate()
+        {
+            OutputNeuron.Value += InputNeuron.Value * Weight;
+        }
     }
 }

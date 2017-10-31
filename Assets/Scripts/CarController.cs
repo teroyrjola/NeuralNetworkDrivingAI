@@ -1,25 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts;
+using Assets.Scripts.AI;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    public bool userControl;
     public float acceleration;
     public float steering;
+
+    public double[] controllerInput;
+
     private Sensor[] sensors;
     private Rigidbody2D rb;
+
+    public Agent agent { get; set; }
+
+    public double[] Movement { get; set; }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sensors = GetComponentsInChildren<Sensor>();
+        agent = new Agent();
+        Movement = new double[4];
     }
 
     void FixedUpdate()
     {
-        float h = -Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float v = 1;
+        float h = 1;
+        if (!userControl)
+        {
+            double[] sensorInput = new double[sensors.Length];
+            for (int i = 0; i < sensors.Length; i++)
+            {
+                sensorInput[i] = sensors[i].Output;
+            }
+
+            agent.ANN.SetInputLayer(sensorInput);
+            Movement = agent.ANN.ProcessInputs();
+
+            h = (float)(Movement[0] - Movement[1]);
+            v = (float)(Movement[2] - Movement[3]);
+        }
+        else
+        {
+            h = -Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+        }
 
         Vector2 speed = transform.up * (v * acceleration);
         rb.AddForce(speed);
@@ -59,6 +89,4 @@ public class CarController : MonoBehaviour
 
         rb.AddForce(rb.GetRelativeVector(relativeForce));
     }
-
-
 }

@@ -2,7 +2,7 @@
 
 namespace Assets.Scripts
 {
-    interface ILayer
+    public interface ILayer
     {
         List<Neuron> neurons { get; set; }
     }

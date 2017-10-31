@@ -2,22 +2,18 @@
 
 namespace Assets.Scripts
 {
-    public partial class HiddenLayer : ILayer
+
+    public class OutputLayer : ILayer
     {
+        public List<Neuron> neurons { get; set; }
 
-        public partial class InputLayer : ILayer
+        public OutputLayer(int numberOfNeurons)
         {
-            public class OutputLayer : ILayer
+            for (int i = 0; i < numberOfNeurons; i++)
             {
-                public List<Neuron> neurons { get; set; }
-
-                public OutputLayer(int numberOfNeurons)
-                {
-                    for (int i = 0; i < numberOfNeurons; i++)
-                    {
-                        neurons.Add(new Neuron());
-                    }
-                }
-
+                neurons.Add(new Neuron());
             }
         }
+
+    }
+}

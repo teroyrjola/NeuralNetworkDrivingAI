@@ -26,22 +26,24 @@ namespace Assets.Scripts
             }
             layers.Add(new OutputLayer(2));
         }
-
+        //intialize a random weight between neurons in layers next to eachother
         private void InitializeWeights()
         {
-            int numberOfWeightLayers = layers.Count - 1;
-            int[] numberOfWeightsPerLayer;
-            List<List<double>> weights;
+            List<List<Synapse>> synapses = new List<List<Synapse>>();
 
-                foreach (var layer in layers)
+            for (int i = 0; i < layers.Count - 1; i++)
+            {
+                List<Synapse> layerOfSynapses = new List<Synapse>();
+
+                for (int j = 0; i < layers[i].neurons.Count; j++)
                 {
-                    List<double> weightsInOneWeightLayer;
-                    foreach (var neuron in layer.neurons)
+                    for (int k = 0; i < layers[i + 1].neurons.Count; k++)
                     {
-                        weights.Add(new Random().NextDouble())
+                        layerOfSynapses.Add(new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]));
                     }
-                    layer.neurons.Count;
                 }
+                synapses.Add(layerOfSynapses);
+            }
         }
     }
 }

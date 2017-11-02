@@ -4,8 +4,16 @@ namespace Assets.Scripts
 {
     public class Neuron
     {
-        //public List<Dendrite> Dendrites { get; set; }
-        public double Bias { get; set; }
         public double Value { get; set; }
+
+        public Neuron()
+        {
+            
+        }
+
+        public Neuron(double value)
+        {
+            Value = value;
+        }
     }
 }

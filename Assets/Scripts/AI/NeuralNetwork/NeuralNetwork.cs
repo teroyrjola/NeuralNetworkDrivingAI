@@ -1,32 +1,37 @@
 ﻿using System;
 using System.Linq;
 using Boo.Lang;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
     public class NeuralNetwork
     {
+        private readonly Neuron BiasNeuron;
         public readonly int numberOfHiddenLayerNeurons = 3;
 
-        public int hiddenLayers;
+        public static double bias;
+        //public int hiddenLayers;
         public List<List<Synapse>> synapses;
         public List<ILayer> layers;
+
 
         public NeuralNetwork(int hiddenLayers)
         {
             InitializeLayers(hiddenLayers);
+            BiasNeuron = new Neuron(bias);
             InitializeWeights();
         }
 
         private void InitializeLayers(int hiddenLayers)
         {
-            layers = new List<ILayer>();
-            layers.Add(new InputLayer(5));
+            layers = new List<ILayer> {new InputLayer(5)};
+
             for (int i = 0; i < hiddenLayers; i++)
             {
                 layers.Add(new HiddenLayer(numberOfHiddenLayerNeurons));
             }
-            layers.Add(new OutputLayer(4));
+            layers.Add(new OutputLayer(2));
         }
 
         //intialize a random weight between neurons in layers next to eachother
@@ -44,6 +49,10 @@ namespace Assets.Scripts
                     {
                         layerOfSynapses.Add(new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]));
                     }
+                }
+                for (int j = 0; j < layers[i + 1].neurons.Count - 1; j++)
+                {
+                    layerOfSynapses.Add(new Synapse(BiasNeuron, layers[i + 1].neurons[j])); //bias
                 }
                 synapses.Add(layerOfSynapses);
             }
@@ -70,6 +79,11 @@ namespace Assets.Scripts
                 {
                     neuron.Value = HelperFunc.SigmoidFunction(neuron.Value);
                 }
+            }
+            //apply the activation function also to the output layer's neurons
+            foreach (var neuron in layers[layers.Count - 1].neurons)
+            {
+                neuron.Value = HelperFunc.SigmoidFunction(neuron.Value);
             }
             return layers[layers.Count - 1].neurons.Select(neuron => neuron.Value).ToArray();
         }

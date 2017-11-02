@@ -91,5 +91,7 @@ public class CarController : MonoBehaviour
         Vector2 relativeForce = (rightAngleFromForward.normalized * -1.0f) * (driftForce * 10.0f);
 
         rb.AddForce(rb.GetRelativeVector(relativeForce));
+
+        Debug.Log("Movement 0: " + Movement[0] + " Movement 1: " + Movement[1]);
     }
 }

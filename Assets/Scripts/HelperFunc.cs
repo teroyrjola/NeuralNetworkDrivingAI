@@ -13,7 +13,7 @@ namespace Assets.Scripts
         public static double SigmoidFunction(double value)
         {
             if (value > 10) return 1.0;
-            else if (value < -10) return 0.0;
+            else if (value < -10) return -1.0;
             else return 1.0 / (1.0 + Math.Exp(-value));
         }
     }

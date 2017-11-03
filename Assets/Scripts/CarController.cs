@@ -30,8 +30,8 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
-        float vertical = 1;
-        float horizontal = 1;
+        float vertical;
+        float horizontal;
         if (!userControl)
         {
             double[] sensorInput = new double[sensors.Length];

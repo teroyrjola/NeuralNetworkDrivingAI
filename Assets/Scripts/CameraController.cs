@@ -12,7 +12,15 @@ public class CameraController : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		transform.position = new Vector3(car.position.x, car.position.y, -10);
+	void Update ()
+	{
+	    var carToFollow = SimulationManagerScript.Instance.cars[0];
+	    foreach (var car in SimulationManagerScript.Instance.cars)
+	    {
+	        if (car.controller.nextCheckpoint > carToFollow.nextCheckpoint) carToFollow = car;
+	    }
+
+        transform.position = new Vector3(carToFollow.controller.GetComponent<Transform>().position.x,
+		    carToFollow.controller.GetComponent<Transform>().position.y, -15);
 	}
 }

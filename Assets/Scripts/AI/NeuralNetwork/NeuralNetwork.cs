@@ -8,7 +8,7 @@ namespace Assets.Scripts
     public class NeuralNetwork
     {
         private readonly Neuron BiasNeuron;
-        public readonly int numberOfHiddenLayerNeurons = 3;
+        public readonly int numberOfHiddenLayerNeurons = SimulationManagerScript.Instance.numberOfNeuronsPerHiddenLayer;
 
         public static double bias;
         //public int hiddenLayers;

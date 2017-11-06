@@ -6,7 +6,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
     public class Genotype
     {
         public List<List<double>> Weights;
-        public double fitness;
+        public int fitness;
 
         public Genotype(List<List<Synapse>> synapses)
         {
@@ -25,7 +25,13 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
             for (int i = 0; i < synapses.Count; i++)
             {
-                weights[i] = (List<double>)synapses[i].Select(synapse => synapse.Weight);
+                List<double> weightLayer = new List<double>();
+
+                for (int j = 0; j < synapses[i].Count; j++)
+                    {
+                        weightLayer.Add(synapses[i][j].Weight);
+                    }
+                weights.Add(weightLayer);
             }
 
             return weights;

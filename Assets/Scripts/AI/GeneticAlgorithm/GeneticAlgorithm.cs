@@ -27,6 +27,14 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             Genotypes.Add(new Genotype(synapses));
         }
 
+
+        public void Start(List<Genotype> genotypes)
+        {
+            Genotypes = genotypes;
+            BreedNewPopulation();
+
+        }
+
         public void BreedNewPopulation()
         {
             List<Genotype> newGenotypes = new List<Genotype>();
@@ -38,27 +46,9 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                 newGenotypes.Add(offspring);
             }
 
+            MutatePopulation();
+
             Genotypes = newGenotypes;
-        }
-
-        public void MutatePopulation()
-        {
-            var mutationMIN = (float) (-MutationAmount / 2.0f);
-            var mutationMAX = (float) (MutationAmount / 2.0f);
-
-            foreach (var genotype in Genotypes)
-            {
-                foreach (var layer in genotype.Weights)
-                {
-                    for (int i = 0; i < layer.Count; i++)
-                    {
-                        if (Random.value < MutationProbability)
-                        {
-                            layer[i] += Random.Range(mutationMIN, mutationMAX);
-                        }
-                    }
-                }
-            }
         }
 
         private Genotype CrossOver(List<Genotype> bestPreviousGenotypes)
@@ -84,12 +74,34 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             return offspring;
         }
 
-        public Genotype[] SelectBestGenotypes(int i)
+        public void MutatePopulation()
         {
-            Genotype[] bestGenotypes = new Genotype[i];
-            SortGenotypesByFitness();
-            bestGenotypes = (Genotype[])Genotypes.Take(i);
+            var mutationMIN = (float) (-MutationAmount / 2.0f);
+            var mutationMAX = (float) (MutationAmount / 2.0f);
 
+            foreach (var genotype in Genotypes)
+            {
+                foreach (var layer in genotype.Weights)
+                {
+                    for (int i = 0; i < layer.Count; i++)
+                    {
+                        if (Random.value < MutationProbability)
+                        {
+                            layer[i] += Random.Range(mutationMIN, mutationMAX);
+                        }
+                    }
+                }
+            }
+        }
+
+        public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes)
+        {
+            Genotype[] bestGenotypes = new Genotype[numberOfBestGenotypes];
+            SortGenotypesByFitness();
+            for (int i = 0; i < numberOfBestGenotypes; i++)
+            {
+                bestGenotypes[i] = Genotypes[i];
+            }
             return bestGenotypes;
         }
 

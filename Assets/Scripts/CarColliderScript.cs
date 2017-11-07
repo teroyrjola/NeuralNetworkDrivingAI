@@ -10,9 +10,13 @@ public class CarColliderScript : MonoBehaviour
         if (collidedWith.gameObject.tag == "Land")
         {
             //Reset();
-            if (GetComponent<CarController>().Agent.IsAlive) SimulationManagerScript.Instance.CarCrash();
-            Die();
-            GetComponent<CarController>().Agent.SetGenotypeFitness();
+            if (GetComponent<CarController>().Agent.IsAlive)
+            {
+                GetComponent<CarController>().Agent.SetGenotypeFitness();
+                Debug.Log(GetComponent<CarController>().Agent.CurrentGenFitness);
+                Die();
+                SimulationManagerScript.Instance.CarCrash();
+            }
         }
 
         if (collidedWith.gameObject.tag == "Checkpoint")
@@ -32,6 +36,7 @@ public class CarColliderScript : MonoBehaviour
         GetComponent<Rigidbody2D>().angularVelocity = 0;
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         GetComponent<CarController>().Agent.IsAlive = false;
+        Debug.Log(GetComponent<CarController>().nextCheckpoint);
         GetComponent<CarController>().nextCheckpoint = 0;
     }
 }

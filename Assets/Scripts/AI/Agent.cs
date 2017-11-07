@@ -16,7 +16,7 @@ namespace Assets.Scripts.AI
         public Agent()
         {
             ANN = new NeuralNetwork(SimulationManagerScript.Instance.numberOfHiddenLayers);
-            genotype = new Genotype(ANN.synapses);
+            SimulationManagerScript.Instance.geneticAlgorithm.Genotypes.Add(new Genotype(ANN.synapses));
             IsAlive = true;
         }
 

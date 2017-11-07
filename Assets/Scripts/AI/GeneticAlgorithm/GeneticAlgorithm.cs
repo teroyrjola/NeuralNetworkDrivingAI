@@ -11,14 +11,16 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public List<Genotype> Genotypes;
 
         public int AmountOfBestGenotypesForParents = 2;
-        public double MutationProbability = 0.01;
-        public double MutationAmount = 0.1;
+        public double MutationProbability = SimulationManagerScript.Instance.MutationProbability;
+        public double MutationAmount = SimulationManagerScript.Instance.MutationAmount;
+        public static int _CurrentGeneration = 0;
 
         private static readonly Random Random = new Random();
 
         public GeneticAlgorithm(int populationSize)
         {
-            CurrentGeneration = 0;
+            CurrentGeneration = _CurrentGeneration;
+            _CurrentGeneration++;
             Genotypes = new List<Genotype>(populationSize);
         }
 
@@ -27,18 +29,16 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             Genotypes.Add(new Genotype(synapses));
         }
 
-
         public void Start(List<Genotype> genotypes)
         {
-            Genotypes = genotypes;
-            BreedNewPopulation();
-
+            List<Genotype> newGenotypes = BreedNewPopulation(genotypes);
+            Genotypes = MutatePopulation(newGenotypes);
         }
 
-        public void BreedNewPopulation()
+        public List<Genotype> BreedNewPopulation(List<Genotype> previousGenotypes)
         {
             List<Genotype> newGenotypes = new List<Genotype>();
-            List<Genotype> bestPreviousGenotypes = new List<Genotype>(SelectBestGenotypes(AmountOfBestGenotypesForParents));
+            List<Genotype> bestPreviousGenotypes = new List<Genotype>(SelectBestGenotypes(AmountOfBestGenotypesForParents, previousGenotypes));
 
             while (newGenotypes.Count < Genotypes.Count)
             {
@@ -46,9 +46,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                 newGenotypes.Add(offspring);
             }
 
-            MutatePopulation();
-
-            Genotypes = newGenotypes;
+            return newGenotypes;
         }
 
         private Genotype CrossOver(List<Genotype> bestPreviousGenotypes)
@@ -74,12 +72,12 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             return offspring;
         }
 
-        public void MutatePopulation()
+        public List<Genotype> MutatePopulation(List<Genotype> newGenotypes)
         {
             var mutationMIN = (float) (-MutationAmount / 2.0f);
             var mutationMAX = (float) (MutationAmount / 2.0f);
 
-            foreach (var genotype in Genotypes)
+            foreach (var genotype in newGenotypes)
             {
                 foreach (var layer in genotype.Weights)
                 {
@@ -92,15 +90,16 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                     }
                 }
             }
+            return newGenotypes;
         }
 
-        public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes)
+        public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes, List<Genotype> previousGenotypes)
         {
             Genotype[] bestGenotypes = new Genotype[numberOfBestGenotypes];
             SortGenotypesByFitness();
             for (int i = 0; i < numberOfBestGenotypes; i++)
             {
-                bestGenotypes[i] = Genotypes[i];
+                bestGenotypes[i] = previousGenotypes[i];
             }
             return bestGenotypes;
         }

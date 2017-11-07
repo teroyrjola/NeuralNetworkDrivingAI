@@ -13,7 +13,6 @@ public class CarColliderScript : MonoBehaviour
             if (GetComponent<CarController>().Agent.IsAlive)
             {
                 GetComponent<CarController>().Agent.SetGenotypeFitness();
-                Debug.Log(GetComponent<CarController>().Agent.CurrentGenFitness);
                 Die();
                 SimulationManagerScript.Instance.CarCrash();
             }

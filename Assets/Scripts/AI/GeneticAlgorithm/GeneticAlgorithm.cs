@@ -8,7 +8,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
     public class GeneticAlgorithm
     {
         public int CurrentGeneration { get; set; }
-        public List<Genotype> Genotypes;
+
 
         public int AmountOfBestGenotypesForParents = 2;
         public double MutationProbability = SimulationManagerScript.Instance.MutationProbability;
@@ -21,35 +21,32 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         {
             CurrentGeneration = _CurrentGeneration;
             _CurrentGeneration++;
-            Genotypes = new List<Genotype>(populationSize);
         }
 
-        public void AddGenotype(List<List<Synapse>> synapses)
+        public Genotype[] Start(Genotype[] genotypes)
         {
-            Genotypes.Add(new Genotype(synapses));
+            Genotype[] newGenotypes = BreedNewPopulation(genotypes);
+            return MutatePopulation(newGenotypes);
         }
 
-        public void Start(List<Genotype> genotypes)
+        public Genotype[] BreedNewPopulation(Genotype[] previousGenotypes)
         {
-            List<Genotype> newGenotypes = BreedNewPopulation(genotypes);
-            Genotypes = MutatePopulation(newGenotypes);
-        }
+            Genotype[] newGenotypes = new Genotype[previousGenotypes.Length];
+            Genotype[] bestPreviousGenotypes = SelectBestGenotypes(AmountOfBestGenotypesForParents, previousGenotypes);
 
-        public List<Genotype> BreedNewPopulation(List<Genotype> previousGenotypes)
-        {
-            List<Genotype> newGenotypes = new List<Genotype>();
-            List<Genotype> bestPreviousGenotypes = new List<Genotype>(SelectBestGenotypes(AmountOfBestGenotypesForParents, previousGenotypes));
+            int index = 0;
 
-            while (newGenotypes.Count < Genotypes.Count)
+            while (newGenotypes.Length < previousGenotypes.Length)
             {
                 Genotype offspring = CrossOver(bestPreviousGenotypes);
-                newGenotypes.Add(offspring);
+                newGenotypes[index] = offspring;
+                index++;
             }
 
             return newGenotypes;
         }
 
-        private Genotype CrossOver(List<Genotype> bestPreviousGenotypes)
+        private Genotype CrossOver(Genotype[] bestPreviousGenotypes)
         {
             Genotype offspring = new Genotype();
             List<List<double>> newWeights = new List<List<double>>();
@@ -61,7 +58,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
                 for (int j = 0; j < bestPreviousGenotypes[0].Weights[i].Count; j++)
                 {
-                    weightLayer.Add(bestPreviousGenotypes[Random.Range(0, bestPreviousGenotypes.Count-1)].Weights[i][j]);
+                    weightLayer.Add(bestPreviousGenotypes[Random.Range(0, bestPreviousGenotypes.Length-1)].Weights[i][j]);
                 }
 
                 newWeights.Add(weightLayer);
@@ -72,7 +69,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             return offspring;
         }
 
-        public List<Genotype> MutatePopulation(List<Genotype> newGenotypes)
+        public Genotype[] MutatePopulation(Genotype[] newGenotypes)
         {
             var mutationMIN = (float) (-MutationAmount / 2.0f);
             var mutationMAX = (float) (MutationAmount / 2.0f);
@@ -93,10 +90,10 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             return newGenotypes;
         }
 
-        public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes, List<Genotype> previousGenotypes)
+        public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes, Genotype[] previousGenotypes)
         {
             Genotype[] bestGenotypes = new Genotype[numberOfBestGenotypes];
-            SortGenotypesByFitness();
+            SortGenotypesByFitness(previousGenotypes);
             for (int i = 0; i < numberOfBestGenotypes; i++)
             {
                 bestGenotypes[i] = previousGenotypes[i];
@@ -104,9 +101,10 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             return bestGenotypes;
         }
 
-        public void SortGenotypesByFitness()
+        public Genotype[] SortGenotypesByFitness(Genotype[] genotypes)
         {
-            Genotypes = new List<Genotype>(Genotypes.OrderByDescending(genotype => genotype.fitness).ToList());
+            Genotype[] sortedGenotypes = genotypes.OrderByDescending(genotype => genotype.fitness).ToArray();
+            return sortedGenotypes;
         }
     }
 }

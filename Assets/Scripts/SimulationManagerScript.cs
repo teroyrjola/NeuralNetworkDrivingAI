@@ -56,21 +56,21 @@ public class SimulationManagerScript : MonoBehaviour
     private void StartEvaluation(Car[] crashedCars)
     {
         geneticAlgorithm = new GeneticAlgorithm(carAmount);
-        List<Genotype> genotypes = new List<Genotype>();
+        Genotype[] genotypes = new Genotype[carAmount];
 
-        foreach (var car in crashedCars)
+        for (var i = 0; i < crashedCars.Length; i++)
         {
-            genotypes.Add(car.controller.Agent.genotype);
+            genotypes[i] = cars[i].controller.Agent.genotype;
         }
 
-        geneticAlgorithm.Start(genotypes);
+        Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
 
-        cars = CopyNewWeightsFromGAToANN(crashedCars);
+        cars = CopyNewWeightsFromGAToANN(crashedCars, newGenotypes);
 
         ResetCars();
     }
 
-    private Car[] CopyNewWeightsFromGAToANN(Car[] crashedCars)
+    private Car[] CopyNewWeightsFromGAToANN(Car[] crashedCars, Genotype[] genotypes)
     {
         for (int i = 0; i < crashedCars.Length; i++)
         {
@@ -78,7 +78,7 @@ public class SimulationManagerScript : MonoBehaviour
             {
                 for (int k = 0; k < crashedCars[i].controller.Agent.ANN.synapses[j].Count; k++)
                 {
-                    crashedCars[i].controller.Agent.ANN.synapses[j][k].Weight = geneticAlgorithm.Genotypes[i].Weights[j][k];
+                    crashedCars[i].controller.Agent.ANN.synapses[j][k].Weight = genotypes[i].Weights[j][k];
                 }
 
             }

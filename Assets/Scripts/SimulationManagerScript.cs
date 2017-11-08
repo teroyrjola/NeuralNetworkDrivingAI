@@ -1,109 +1,115 @@
-﻿using System.Collections;
-using System.Linq;
-using Assets.Scripts;
-using Assets.Scripts.AI;
-using Assets.Scripts.AI.GeneticAlgorithm;
-using Boo.Lang;
+﻿using Assets.Scripts.AI.GeneticAlgorithm;
 using UnityEngine;
 
-public class SimulationManagerScript : MonoBehaviour
+namespace Assets.Scripts
 {
-    public static SimulationManagerScript Instance
+    public class SimulationManagerScript : MonoBehaviour
     {
-        get;
-        private set;
-    }
-    public GeneticAlgorithm geneticAlgorithm;
-    public int carAmount;
-    public int numberOfHiddenLayers;
-    public int numberOfNeuronsPerHiddenLayer;
-    public double MutationProbability;
-    public double MutationAmount;
-    private int CarsCrashed;
-    public GameObject firstCar;
-    public GameObject checkpoints;
-
-    public Car[] cars;
-
-    // Use this for initialization
-    void Awake()
-    {
-        Instance = this;
-        cars = new Car[carAmount];
-
-        for (int i = 0; i < carAmount; i++)  //-1 because car number one is already on track
+        public static SimulationManagerScript Instance
         {
-            GameObject newCar = Instantiate(firstCar.gameObject);
-            if (newCar.GetComponentsInChildren<Sensor>().Length < 5)
-                Debug.Log("Unkown failure, only " +newCar.GetComponents<Sensor>().Length + " sensors active on one car.");
-            newCar.transform.position = newCar.transform.localPosition;
-            newCar.transform.rotation = newCar.transform.localRotation;
-            CarController newController = newCar.GetComponent<CarController>();
-            cars[i] = (new Car(newController));
-            newCar.SetActive(true);
+            get;
+            private set;
         }
-        firstCar.SetActive(false);
-    }
+        public GeneticAlgorithm geneticAlgorithm;
+        public int carAmount;
+        public int numberOfHiddenLayers;
+        public int numberOfNeuronsPerHiddenLayer;
+        public int AmountOfBestGenotypesForParents;
+        public double MutationProbability;
+        public double MutationAmount;
+        private int CarsCrashed;
+        public GameObject firstCar;
+        public GameObject checkpoints;
 
-    public void CarCrash()
-    {
-        CarsCrashed++;
+        public Car[] cars;
 
-        if (CarsCrashed == carAmount)
+        // Use this for initialization
+        void Awake()
         {
-            StartEvaluation(cars);
-            CarsCrashed = 0;
-        }
-    }
+            Instance = this;
+            cars = new Car[carAmount];
 
-    private void StartEvaluation(Car[] crashedCars)
-    {
-        geneticAlgorithm = new GeneticAlgorithm(carAmount);
-        Genotype[] genotypes = new Genotype[carAmount];
-
-        for (var i = 0; i < crashedCars.Length; i++)
-        {
-            genotypes[i] = cars[i].controller.Agent.genotype;
-        }
-
-        Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
-
-        cars = CopyNewWeightsFromGAToANN(crashedCars, newGenotypes);
-        cars.ToString();
-        ResetCheckpointsAndCars();
-    }
-
-    private Car[] CopyNewWeightsFromGAToANN(Car[] crashedCars, Genotype[] genotypes)
-    {
-        for (int i = 0; i < crashedCars.Length; i++)
-        {
-            for (int j = 0; j < crashedCars[i].controller.Agent.ANN.synapses.Length; j++)
+            for (int i = 0; i < carAmount; i++)  //-1 because car number one is already on track
             {
-                for (int k = 0; k < crashedCars[i].controller.Agent.ANN.synapses[j].Length; k++)
+                GameObject newCar = Instantiate(firstCar.gameObject);
+                var sensors = newCar.GetComponentsInChildren<Sensor>();
+                for (var j = 0; j < sensors.Length -1; j++)
                 {
-                    crashedCars[i].controller.Agent.ANN.synapses[j][k].Weight = genotypes[i].Weights[j][k];
+                    if (sensors[j].sensor.localPosition == sensors[j+1].sensor.localPosition)
+                        Debug.Log("Unkown failure, car's all sensors placed on one position.");
                 }
+                newCar.transform.position = newCar.transform.localPosition;
+                newCar.transform.rotation = newCar.transform.localRotation;
+                CarController newController = newCar.GetComponent<CarController>();
+                cars[i] = (new Car(newController));
+                newCar.SetActive(true);
+            }
+            firstCar.SetActive(false);
+        }
+
+        public void CarCrash()
+        {
+            CarsCrashed++;
+
+            if (CarsCrashed == carAmount)
+            {
+                StartEvaluation(cars);
+                CarsCrashed = 0;
             }
         }
 
-        return crashedCars;
-    }
-
-    private void ResetCheckpointsAndCars()
-    {
-        foreach (var car in cars)
+        private void StartEvaluation(Car[] crashedCars)
         {
-            car.controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
-            car.controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
-            car.controller.Agent.IsAlive = true;
-            car.controller.Agent.CurrentGenFitness = 0;
-            car.controller.Agent.genotype.fitness = 0;
-            car.controller.timeSinceLastCheckpoint = 0;
+            geneticAlgorithm = new GeneticAlgorithm();
+            Genotype[] genotypes = new Genotype[carAmount];
+
+            for (var i = 0; i < crashedCars.Length; i++)
+            {
+                genotypes[i] = cars[i].controller.Agent.genotype;
+            }
+
+            Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
+
+            for (int i = 0; i < cars.Length; i++)
+            {
+                cars[i].controller.Agent.genotype = newGenotypes[i];
+                cars[i].controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
+            }
+            cars.ToString();
+            ResetCheckpointsAndCars();
         }
 
-        foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())
+        private Synapse[][] CopyNewWeightsFromGAToANN(Car car, Genotype genotype)
         {
-            checkpoint.SetRewardLeftToInitialValue();
+            Synapse[][] currentSynapses = car.controller.Agent.ANN.synapses;
+
+                for (int i = 0; i < currentSynapses.Length; i++)
+                {
+                    for (int j = 0; j < currentSynapses[i].Length; j++)
+                    {
+                        currentSynapses[i][j].SetWeight(genotype.Weights[i][j]);
+                    }
+                }
+
+            return currentSynapses;
+        }
+
+        private void ResetCheckpointsAndCars()
+        {
+            foreach (var car in cars)
+            {
+                car.controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
+                car.controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
+                car.controller.Agent.IsAlive = true;
+                car.controller.Agent.CurrentGenFitness = 0;
+                car.controller.Agent.genotype.fitness = 0;
+                car.controller.timeSinceLastCheckpoint = 0;
+            }
+
+            foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())
+            {
+                checkpoint.SetRewardLeftToInitialValue();
+            }
         }
     }
 }

@@ -10,15 +10,14 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public int CurrentGeneration { get; set; }
 
 
-        public int AmountOfBestGenotypesForParents = 2;
+        public int AmountOfBestGenotypesForParents = SimulationManagerScript.Instance.AmountOfBestGenotypesForParents < 2 ?
+                                                    2 : SimulationManagerScript.Instance.AmountOfBestGenotypesForParents;
         private bool keepBestGenotype = true;
         public double MutationProbability = SimulationManagerScript.Instance.MutationProbability;
         public double MutationAmount = SimulationManagerScript.Instance.MutationAmount;
         public static int _CurrentGeneration = 0;
 
-        private static readonly Random Random = new Random();
-
-        public GeneticAlgorithm(int populationSize)
+        public GeneticAlgorithm()
         {
             CurrentGeneration = _CurrentGeneration;
             _CurrentGeneration++;
@@ -28,7 +27,6 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         {
             Genotype[] newGenotypes = BreedNewPopulation(genotypes);
             return MutatePopulation(newGenotypes);
-             
         }
 
         public Genotype[] BreedNewPopulation(Genotype[] previousGenotypes)
@@ -51,9 +49,8 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
         private Genotype CrossOver(Genotype[] bestPreviousGenotypes)
         {
-            Debug.Log(bestPreviousGenotypes[0].fitness +" "+bestPreviousGenotypes[1].fitness);
             Genotype offspring = new Genotype();
-            double[][] newWeights = new double[bestPreviousGenotypes.Length][];
+            double[][] newWeights = new double[bestPreviousGenotypes[0].Weights.Length][];
             int amountOfWeightLayers = bestPreviousGenotypes[0].Weights.Length;
 
             for (int i = 0; i < amountOfWeightLayers; i++)
@@ -62,7 +59,8 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
                 for (int j = 0; j < bestPreviousGenotypes[0].Weights[i].Length; j++)
                 {
-                    weightLayer[j] = (bestPreviousGenotypes[Random.Range(0, bestPreviousGenotypes.Length)].Weights[i][j]);
+                    weightLayer[j] = CalculateNextWeight(bestPreviousGenotypes, i, j);
+
                 }
 
                 newWeights[i]= (weightLayer);
@@ -71,6 +69,23 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             offspring.Weights = newWeights;
 
             return offspring;
+        }
+
+        private double CalculateNextWeight(Genotype[] bestPreviousGenotypes, int i, int j)
+        {
+            int totalFitness = 0;
+            int sumOfFitnessSoFar = 0;
+            foreach (var genotype in bestPreviousGenotypes)
+            {
+                totalFitness += genotype.fitness;
+            }
+            int randomFactor = Random.Range(0, totalFitness);
+            foreach (var genotype in bestPreviousGenotypes)
+            {
+                sumOfFitnessSoFar += genotype.fitness;
+                if (randomFactor < sumOfFitnessSoFar) return genotype.Weights[i][j];
+            }
+            return 0;
         }
 
         public Genotype[] MutatePopulation(Genotype[] newGenotypes)

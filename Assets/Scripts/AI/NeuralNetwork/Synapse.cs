@@ -20,5 +20,10 @@ namespace Assets.Scripts
         {
             OutputNeuron.Value += InputNeuron.Value * Weight;
         }
+
+        public void SetWeight(double weight)
+        {
+            Weight = weight;
+        }
     }
 }

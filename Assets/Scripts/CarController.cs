@@ -35,14 +35,19 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-            timeSinceLastCheckpoint += Time.deltaTime;
-        if (timeSinceLastCheckpoint > maxTimeBetweenCheckpoints)
+        if (Agent.IsAlive)
         {
-            GetComponent<Rigidbody2D>().angularVelocity = 0;
-            GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-            GetComponent<CarController>().Agent.IsAlive = false;
-            GetComponent<CarController>().nextCheckpoint = 0;
-            SimulationManagerScript.Instance.CarCrash();
+            timeSinceLastCheckpoint += Time.deltaTime;
+
+            if (timeSinceLastCheckpoint > maxTimeBetweenCheckpoints)
+            {
+                GetComponent<Rigidbody2D>().angularVelocity = 0;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                GetComponent<CarController>().Agent.SetGenotypeFitness();
+                GetComponent<CarController>().Agent.IsAlive = false;
+                GetComponent<CarController>().nextCheckpoint = 0;
+                SimulationManagerScript.Instance.CarCrash();
+            }
         }
     }
 

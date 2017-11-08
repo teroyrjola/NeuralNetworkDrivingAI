@@ -12,8 +12,8 @@ namespace Assets.Scripts
 
         public static double bias;
         //public int hiddenLayers;
-        public List<List<Synapse>> synapses;
-        public List<ILayer> layers;
+        public Synapse[][] synapses;
+        public ILayer[] layers;
 
 
         public NeuralNetwork(int hiddenLayers)
@@ -25,36 +25,36 @@ namespace Assets.Scripts
 
         private void InitializeLayers(int hiddenLayers)
         {
-            layers = new List<ILayer> {new InputLayer(5)};
-
-            for (int i = 0; i < hiddenLayers; i++)
+            layers = new ILayer[2 + hiddenLayers];
+            layers[0] = new InputLayer(5);
+            for (int i = 1; i < hiddenLayers +1 ; i++)
             {
-                layers.Add(new HiddenLayer(numberOfHiddenLayerNeurons));
+                layers[i] = new HiddenLayer(numberOfHiddenLayerNeurons);
             }
-            layers.Add(new OutputLayer(2));
+            layers[layers.Length -1] = (new OutputLayer(2));
         }
 
         //intialize a random weight between neurons in layers next to eachother
         private void InitializeWeights()
         {
-            synapses = new List<List<Synapse>>();
+            synapses = new Synapse[layers.Length-1][];
 
-            for (int i = 0; i < layers.Count - 1; i++)
+            for (int i = 0; i < layers.Length - 1; i++)
             {
-                List<Synapse> layerOfSynapses = new List<Synapse>();
+                Synapse[] layerOfSynapses = new Synapse[layers[i].neurons.Length];
 
-                for (int j = 0; j < layers[i].neurons.Count; j++)
+                for (int j = 0; j < layers[i].neurons.Length; j++)
                 {
-                    for (int k = 0; k < layers[i + 1].neurons.Count-1; k++)
+                    for (int k = 0; k < layers[i + 1].neurons.Length-1; k++)
                     {
-                        layerOfSynapses.Add(new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]));
+                        layerOfSynapses[j] = (new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]));
                     }
                 }
-                for (int j = 0; j < layers[i + 1].neurons.Count - 1; j++)
+                for (int j = 0; j < layers[i + 1].neurons.Length - 1; j++)
                 {
-                    layerOfSynapses.Add(new Synapse(BiasNeuron, layers[i + 1].neurons[j])); //bias
+                    layerOfSynapses[layerOfSynapses.Length -1] = (new Synapse(BiasNeuron, layers[i + 1].neurons[j])); //bias
                 }
-                synapses.Add(layerOfSynapses);
+                synapses[i] = (layerOfSynapses);
             }
         }
 
@@ -68,8 +68,7 @@ namespace Assets.Scripts
 
         public double[] ProcessInputs()
         {
-
-            for (int i = 0; i < synapses.Count; i++)
+            for (int i = 0; i < synapses.Length; i++)
             {
                 foreach(var synapse in synapses[i])
                 {
@@ -81,11 +80,11 @@ namespace Assets.Scripts
                 }
             }
             //apply the activation function also to the output layer's neurons
-            foreach (var neuron in layers[layers.Count - 1].neurons)
+            foreach (var neuron in layers[layers.Length - 1].neurons)
             {
                 neuron.Value = HelperFunc.SigmoidFunction(neuron.Value);
             }
-            return layers[layers.Count - 1].neurons.Select(neuron => neuron.Value).ToArray();
+            return layers[layers.Length - 1].neurons.Select(neuron => neuron.Value).ToArray();
         }
     }
 }

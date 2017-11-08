@@ -9,10 +9,11 @@ public class CarColliderScript : MonoBehaviour
     {
         if (collidedWith.gameObject.tag == "Land")
         {
+            CarController controller = GetComponent<CarController>();
             //Reset();
-            if (GetComponent<CarController>().Agent.IsAlive)
+            if (controller.Agent.IsAlive)
             {
-                GetComponent<CarController>().Agent.SetGenotypeFitness();
+                controller.Agent.SetGenotypeFitness();
                 Die();
                 SimulationManagerScript.Instance.CarCrash();
             }
@@ -20,12 +21,18 @@ public class CarColliderScript : MonoBehaviour
 
         if (collidedWith.gameObject.tag == "Checkpoint")
         {
-            if (GetComponent<CarController>().nextCheckpoint ==
-                collidedWith.gameObject.GetComponent<CheckpointScript>().Index)
+            CarController controller = GetComponent<CarController>();
+            CheckpointScript checkpoint = collidedWith.GetComponent<CheckpointScript>();
+
+            if (controller.nextCheckpoint == collidedWith.gameObject.GetComponent<CheckpointScript>().Index)
             {
-                GetComponent<CarController>().Agent.CurrentGenFitness++;
-                GetComponent<CarController>().nextCheckpoint++;
-                GetComponent<CarController>().timeSinceLastCheckpoint = 0;
+                controller.Agent.CurrentGenFitness++;
+                if (checkpoint.TakeRewardIfAnyLeft())
+                {
+                    controller.Agent.CurrentGenFitness++;
+                }
+                controller.nextCheckpoint++;
+                controller.timeSinceLastCheckpoint = 0;
             }
         }
     }
@@ -35,7 +42,6 @@ public class CarColliderScript : MonoBehaviour
         GetComponent<Rigidbody2D>().angularVelocity = 0;
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         GetComponent<CarController>().Agent.IsAlive = false;
-        Debug.Log(GetComponent<CarController>().nextCheckpoint);
         GetComponent<CarController>().nextCheckpoint = 0;
     }
 }

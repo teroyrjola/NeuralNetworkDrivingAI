@@ -5,14 +5,14 @@ namespace Assets.Scripts
 
     public class OutputLayer : ILayer
     {
-        public List<Neuron> neurons { get; set; }
+        public Neuron[] neurons { get; set; }
 
         public OutputLayer(int numberOfNeurons)
         {
-            neurons = new List<Neuron>();
+            neurons = new Neuron[numberOfNeurons];
             for (int i = 0; i < numberOfNeurons; i++)
             {
-                neurons.Add(new Neuron());
+                neurons[i] = (new Neuron());
             }
         }
 

@@ -4,14 +4,14 @@ namespace Assets.Scripts
 {
     public class InputLayer : ILayer
     {
-        public List<Neuron> neurons { get; set; }
+        public Neuron[] neurons { get; set; }
 
         public InputLayer(int numberOfNeurons)
         {
-            neurons = new List<Neuron>();
+            neurons = new Neuron[numberOfNeurons];
             for (int i = 0; i < numberOfNeurons; i++)
             {
-                neurons.Add(new Neuron());
+                neurons[i] = (new Neuron());
             }
         }
     }

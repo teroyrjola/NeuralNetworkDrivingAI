@@ -21,6 +21,7 @@ public class SimulationManagerScript : MonoBehaviour
     public double MutationAmount;
     private int CarsCrashed;
     public GameObject firstCar;
+    public GameObject checkpoints;
 
     public Car[] cars;
 
@@ -33,6 +34,8 @@ public class SimulationManagerScript : MonoBehaviour
         for (int i = 0; i < carAmount; i++)  //-1 because car number one is already on track
         {
             GameObject newCar = Instantiate(firstCar.gameObject);
+            if (newCar.GetComponentsInChildren<Sensor>().Length < 5)
+                Debug.Log("Unkown failure, only " +newCar.GetComponents<Sensor>().Length + " sensors active on one car.");
             newCar.transform.position = newCar.transform.localPosition;
             newCar.transform.rotation = newCar.transform.localRotation;
             CarController newController = newCar.GetComponent<CarController>();
@@ -66,35 +69,41 @@ public class SimulationManagerScript : MonoBehaviour
         Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
 
         cars = CopyNewWeightsFromGAToANN(crashedCars, newGenotypes);
-
-        ResetCars();
+        cars.ToString();
+        ResetCheckpointsAndCars();
     }
 
     private Car[] CopyNewWeightsFromGAToANN(Car[] crashedCars, Genotype[] genotypes)
     {
         for (int i = 0; i < crashedCars.Length; i++)
         {
-            for (int j = 0; j < crashedCars[i].controller.Agent.ANN.synapses.Count; j++)
+            for (int j = 0; j < crashedCars[i].controller.Agent.ANN.synapses.Length; j++)
             {
-                for (int k = 0; k < crashedCars[i].controller.Agent.ANN.synapses[j].Count; k++)
+                for (int k = 0; k < crashedCars[i].controller.Agent.ANN.synapses[j].Length; k++)
                 {
                     crashedCars[i].controller.Agent.ANN.synapses[j][k].Weight = genotypes[i].Weights[j][k];
                 }
-
             }
         }
 
         return crashedCars;
     }
 
-    private void ResetCars()
+    private void ResetCheckpointsAndCars()
     {
         foreach (var car in cars)
         {
             car.controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
             car.controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
             car.controller.Agent.IsAlive = true;
+            car.controller.Agent.CurrentGenFitness = 0;
+            car.controller.Agent.genotype.fitness = 0;
             car.controller.timeSinceLastCheckpoint = 0;
+        }
+
+        foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())
+        {
+            checkpoint.SetRewardLeftToInitialValue();
         }
     }
 }

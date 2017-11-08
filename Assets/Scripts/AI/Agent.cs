@@ -23,7 +23,6 @@ namespace Assets.Scripts.AI
         public void SetGenotypeFitness()
         {
             genotype.fitness = CurrentGenFitness;
-            CurrentGenFitness = 0;
         }
 
     }

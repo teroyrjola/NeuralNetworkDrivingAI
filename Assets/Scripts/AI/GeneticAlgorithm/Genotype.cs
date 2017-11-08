@@ -5,10 +5,10 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 {
     public class Genotype
     {
-        public List<List<double>> Weights;
+        public double[][] Weights;
         public int fitness;
 
-        public Genotype(List<List<Synapse>> synapses)
+        public Genotype(Synapse[][] synapses)
         {
             fitness = 0;
             Weights = GetWeights(synapses);
@@ -19,19 +19,19 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
             fitness = 0;
         }
 
-        private List<List<double>> GetWeights(List<List<Synapse>> synapses)
+        private double[][] GetWeights(Synapse[][] synapses)
         {
-            List<List<double>> weights = new List<List<double>>();
+            double[][] weights = new double[synapses.Length][];
 
-            for (int i = 0; i < synapses.Count; i++)
+            for (int i = 0; i < synapses.Length; i++)
             {
-                List<double> weightLayer = new List<double>();
+                double[] weightLayer = new double[synapses[i].Length];
 
-                for (int j = 0; j < synapses[i].Count; j++)
+                for (int j = 0; j < synapses[i].Length; j++)
                     {
-                        weightLayer.Add(synapses[i][j].Weight);
+                        weightLayer[j] = (synapses[i][j].Weight);
                     }
-                weights.Add(weightLayer);
+                weights[i] = (weightLayer);
             }
 
             return weights;

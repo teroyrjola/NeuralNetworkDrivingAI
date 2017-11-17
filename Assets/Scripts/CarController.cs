@@ -18,7 +18,7 @@ public class CarController : MonoBehaviour
 
     public double[] controllerInput;
 
-    private Sensor[] sensors;
+    internal Sensor[] sensors;
     private Rigidbody2D rb;
 
     public Agent Agent { get; set; }
@@ -29,6 +29,10 @@ public class CarController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sensors = GetComponentsInChildren<Sensor>();
+        foreach (var sensor in sensors)
+        {
+            sensor.active = true;
+        }
         Movement = new double[4];
         Agent = new Agent();
     }
@@ -46,6 +50,7 @@ public class CarController : MonoBehaviour
                 GetComponent<CarController>().Agent.SetGenotypeFitness();
                 GetComponent<CarController>().Agent.IsAlive = false;
                 GetComponent<CarController>().nextCheckpoint = 0;
+                GetComponent<CarController>().HideSensors();
                 SimulationManagerScript.Instance.CarCrash();
             }
         }
@@ -116,6 +121,33 @@ public class CarController : MonoBehaviour
             Vector2 relativeForce = (rightAngleFromForward.normalized * -1.0f) * (driftForce * 10.0f);
 
             rb.AddForce(rb.GetRelativeVector(relativeForce));
+        }
+    }
+
+    public void ResetSensors()
+    {
+            sensors[0].sensor.gameObject.transform.localPosition = new Vector3(0, 5.75f);
+            sensors[1].sensor.gameObject.transform.localPosition = new Vector3(2.5f, 5f);
+            sensors[2].sensor.gameObject.transform.localPosition = new Vector3(4f, 3f);
+            sensors[3].sensor.gameObject.transform.localPosition = new Vector3(-2.5f, 5f);
+            sensors[4].sensor.gameObject.transform.localPosition = new Vector3(-4f, 3f);
+    }
+
+    public void HideSensors()
+    {
+        foreach (var sensor in sensors)
+        {
+            sensor.active = false;
+            sensor.sensor.gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowSensors()
+    {
+        foreach (var sensor in sensors)
+        {
+            sensor.active = true;
+            sensor.sensor.gameObject.SetActive(true);
         }
     }
 }

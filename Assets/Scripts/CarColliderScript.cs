@@ -44,5 +44,6 @@ public class CarColliderScript : MonoBehaviour
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         GetComponent<CarController>().Agent.IsAlive = false;
         GetComponent<CarController>().nextCheckpoint = 0;
+        GetComponent<CarController>().HideSensors();
     }
 }

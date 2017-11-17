@@ -9,7 +9,6 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
     {
         public int CurrentGeneration { get; set; }
 
-
         public int AmountOfBestGenotypesForParents = SimulationManagerScript.Instance.AmountOfBestGenotypesForParents < 2 ?
                                                     2 : SimulationManagerScript.Instance.AmountOfBestGenotypesForParents;
         private bool keepBestGenotype = true;

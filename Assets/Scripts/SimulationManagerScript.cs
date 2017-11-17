@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.AI.GeneticAlgorithm;
+﻿using System.Linq;
+using Assets.Scripts.AI.GeneticAlgorithm;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -23,21 +24,16 @@ namespace Assets.Scripts
 
         public Car[] cars;
 
-        // Use this for initialization
         void Awake()
         {
             Instance = this;
+            geneticAlgorithm = new GeneticAlgorithm();
             cars = new Car[carAmount];
 
             for (int i = 0; i < carAmount; i++)  //-1 because car number one is already on track
             {
                 GameObject newCar = Instantiate(firstCar.gameObject);
-                var sensors = newCar.GetComponentsInChildren<Sensor>();
-                for (var j = 0; j < sensors.Length -1; j++)
-                {
-                    if (sensors[j].sensor.localPosition == sensors[j+1].sensor.localPosition)
-                        Debug.Log("Unkown failure, car's all sensors placed on one position.");
-                }
+
                 newCar.transform.position = newCar.transform.localPosition;
                 newCar.transform.rotation = newCar.transform.localRotation;
                 CarController newController = newCar.GetComponent<CarController>();
@@ -60,7 +56,6 @@ namespace Assets.Scripts
 
         private void StartEvaluation(Car[] crashedCars)
         {
-            geneticAlgorithm = new GeneticAlgorithm();
             Genotype[] genotypes = new Genotype[carAmount];
 
             for (var i = 0; i < crashedCars.Length; i++)
@@ -75,7 +70,6 @@ namespace Assets.Scripts
                 cars[i].controller.Agent.genotype = newGenotypes[i];
                 cars[i].controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
             }
-            cars.ToString();
             ResetCheckpointsAndCars();
         }
 
@@ -104,6 +98,8 @@ namespace Assets.Scripts
                 car.controller.Agent.CurrentGenFitness = 0;
                 car.controller.Agent.genotype.fitness = 0;
                 car.controller.timeSinceLastCheckpoint = 0;
+                car.controller.ResetSensors();
+                car.controller.ShowSensors();
             }
 
             foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())

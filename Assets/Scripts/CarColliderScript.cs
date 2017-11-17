@@ -28,7 +28,8 @@ public class CarColliderScript : MonoBehaviour
             if (controller.nextCheckpoint == collidedWith.gameObject.GetComponent<CheckpointScript>().Index)
             {
                 controller.Agent.CurrentGenFitness++;
-                if (checkpoint.TakeRewardIfAnyLeft())
+
+                if (checkpoint.TakeExtraRewardIfAnyLeft())
                 {
                     controller.Agent.CurrentGenFitness++;
                 }

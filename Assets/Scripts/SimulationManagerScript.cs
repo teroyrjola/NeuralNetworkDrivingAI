@@ -6,11 +6,7 @@ namespace Assets.Scripts
 {
     public class SimulationManagerScript : MonoBehaviour
     {
-        public static SimulationManagerScript Instance
-        {
-            get;
-            private set;
-        }
+        public static SimulationManagerScript Instance { get; private set; }
         public GeneticAlgorithm geneticAlgorithm;
         public int carAmount;
         public int numberOfHiddenLayers;
@@ -30,7 +26,7 @@ namespace Assets.Scripts
             geneticAlgorithm = new GeneticAlgorithm();
             cars = new Car[carAmount];
 
-            for (int i = 0; i < carAmount; i++)  //-1 because car number one is already on track
+            for (int i = 0; i < carAmount; i++) //-1 because car number one is already on track
             {
                 GameObject newCar = Instantiate(firstCar.gameObject);
 
@@ -41,6 +37,8 @@ namespace Assets.Scripts
                 newCar.SetActive(true);
             }
             firstCar.SetActive(false);
+
+            ResetCheckpoints();
         }
 
         public void CarCrash()
@@ -70,25 +68,26 @@ namespace Assets.Scripts
                 cars[i].controller.Agent.genotype = newGenotypes[i];
                 cars[i].controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
             }
-            ResetCheckpointsAndCars();
+            ResetCars();
+            ResetCheckpoints();
         }
 
         private Synapse[][] CopyNewWeightsFromGAToANN(Car car, Genotype genotype)
         {
             Synapse[][] currentSynapses = car.controller.Agent.ANN.synapses;
 
-                for (int i = 0; i < currentSynapses.Length; i++)
+            for (int i = 0; i < currentSynapses.Length; i++)
+            {
+                for (int j = 0; j < currentSynapses[i].Length; j++)
                 {
-                    for (int j = 0; j < currentSynapses[i].Length; j++)
-                    {
-                        currentSynapses[i][j].SetWeight(genotype.Weights[i][j]);
-                    }
+                    currentSynapses[i][j].SetWeight(genotype.Weights[i][j]);
                 }
+            }
 
             return currentSynapses;
         }
 
-        private void ResetCheckpointsAndCars()
+        private void ResetCars()
         {
             foreach (var car in cars)
             {
@@ -101,7 +100,10 @@ namespace Assets.Scripts
                 car.controller.ResetSensors();
                 car.controller.ShowSensors();
             }
+        }
 
+        private void ResetCheckpoints()
+        {
             foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())
             {
                 checkpoint.SetRewardLeftToInitialValue();

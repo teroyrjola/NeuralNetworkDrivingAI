@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class CheckpointScript : MonoBehaviour
 {
-    private int RewardLeft;
     public int InitialReward;
+    public int RewardLeft;
     public int Index;
 
-    public bool TakeRewardIfAnyLeft()
+    public bool TakeExtraRewardIfAnyLeft()
     {
         if (RewardLeft < 1) return false;
         RewardLeft--;

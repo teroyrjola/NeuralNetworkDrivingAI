@@ -25,14 +25,19 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public Genotype[] Start(Genotype[] genotypes)
         {
             Genotype[] newGenotypes = BreedNewPopulation(genotypes);
-            return MutatePopulation(newGenotypes);
+            newGenotypes =  MutatePopulation(newGenotypes);
+
+            foreach (var genotype in newGenotypes)
+            {
+                genotype.fitness = 0;
+            }
+            return newGenotypes;
         }
 
         public Genotype[] BreedNewPopulation(Genotype[] previousGenotypes)
         {
             Genotype[] newGenotypes = new Genotype[previousGenotypes.Length];
             Genotype[] bestPreviousGenotypes = SelectBestGenotypes(AmountOfBestGenotypesForParents, previousGenotypes);
-
             for (int i = 0; i < previousGenotypes.Length; i++)
             {
                 if (i == 0 && keepBestGenotype)
@@ -119,6 +124,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public Genotype[] SortGenotypesByFitness(int numberOfBestGenotypes, Genotype[] genotypes)
         {
             Genotype[] sortedGenotypes = genotypes.OrderByDescending(genotype => genotype.fitness).Take(numberOfBestGenotypes).ToArray();
+            Debug.Log(sortedGenotypes[0].fitness);
             return sortedGenotypes;
         }
     }

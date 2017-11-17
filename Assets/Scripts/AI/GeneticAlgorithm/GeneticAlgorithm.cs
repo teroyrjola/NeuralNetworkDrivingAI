@@ -16,6 +16,10 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public double MutationAmount = SimulationManagerScript.Instance.MutationAmount;
         public static int _CurrentGeneration = 0;
 
+        public bool ExtraRandomizationBeforeMinFitness;
+        public int MinFitness = 24;
+        public int PercentOfRandomGenotypes = 50;
+
         public GeneticAlgorithm()
         {
             CurrentGeneration = _CurrentGeneration;
@@ -25,7 +29,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public Genotype[] Start(Genotype[] genotypes)
         {
             Genotype[] newGenotypes = BreedNewPopulation(genotypes);
-            newGenotypes =  MutatePopulation(newGenotypes);
+            newGenotypes = MutatePopulation(newGenotypes);
 
             foreach (var genotype in newGenotypes)
             {
@@ -38,6 +42,10 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         {
             Genotype[] newGenotypes = new Genotype[previousGenotypes.Length];
             Genotype[] bestPreviousGenotypes = SelectBestGenotypes(AmountOfBestGenotypesForParents, previousGenotypes);
+
+            if (bestPreviousGenotypes[0].fitness < MinFitness && CurrentGeneration > 4) ExtraRandomizationBeforeMinFitness = true;
+            else ExtraRandomizationBeforeMinFitness = false;
+
             for (int i = 0; i < previousGenotypes.Length; i++)
             {
                 if (i == 0 && keepBestGenotype)
@@ -46,7 +54,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                     continue;
                 }
                 Genotype offspring = CrossOver(bestPreviousGenotypes);
-                    newGenotypes[i] = offspring;
+                newGenotypes[i] = offspring;
             }
             return newGenotypes;
         }
@@ -67,7 +75,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
                 }
 
-                newWeights[i]= (weightLayer);
+                newWeights[i] = (weightLayer);
             }
 
             offspring.Weights = newWeights;
@@ -94,8 +102,8 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
         public Genotype[] MutatePopulation(Genotype[] newGenotypes)
         {
-            var mutationMIN = (float) (-MutationAmount / 2.0f);
-            var mutationMAX = (float) (MutationAmount / 2.0f);
+            var mutationMIN = (float)(-MutationAmount / 2.0f);
+            var mutationMAX = (float)(MutationAmount / 2.0f);
 
             foreach (Genotype genotype in newGenotypes)
             {
@@ -112,8 +120,22 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                     }
                 }
             }
+
+            if (ExtraRandomizationBeforeMinFitness)
+            {
+                PercentOfRandomGenotypes = 50;
+                Debug.Log("Fitness score too low after five generations. Starting to randomize more.");
+
+                int numberOfRandomGenotypes = (int)(newGenotypes.Length * (PercentOfRandomGenotypes / 100.0));
+                for (int i = 0; i < numberOfRandomGenotypes; i++)
+                {
+                    newGenotypes[newGenotypes.Length - 1 - i].Weights = RandomizeWeights(newGenotypes[newGenotypes.Length - 1].Weights);
+                }
+            }
             return newGenotypes;
         }
+
+
 
         public Genotype[] SelectBestGenotypes(int numberOfBestGenotypes, Genotype[] previousGenotypes)
         {
@@ -124,8 +146,26 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
         public Genotype[] SortGenotypesByFitness(int numberOfBestGenotypes, Genotype[] genotypes)
         {
             Genotype[] sortedGenotypes = genotypes.OrderByDescending(genotype => genotype.fitness).Take(numberOfBestGenotypes).ToArray();
-            Debug.Log(sortedGenotypes[0].fitness);
             return sortedGenotypes;
+        }
+
+        private double[][] RandomizeWeights(double[][] weights)
+        {
+            double[][] newWeights = new double[weights.Length][];
+
+            for (var i = 0; i < weights.Length; i++)
+            {
+                double[] weightLayer = new double[weights[i].Length];
+
+                for (int j = 0; j < weightLayer.Length; j++)
+                {
+                    weightLayer[j] = HelperFunc.RandomWeight();
+                }
+
+                newWeights[i] = weightLayer;
+            }
+
+            return newWeights;
         }
     }
 }

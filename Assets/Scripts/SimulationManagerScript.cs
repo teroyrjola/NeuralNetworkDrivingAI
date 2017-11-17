@@ -23,7 +23,6 @@ namespace Assets.Scripts
         void Awake()
         {
             Instance = this;
-            geneticAlgorithm = new GeneticAlgorithm();
             cars = new Car[carAmount];
 
             for (int i = 0; i < carAmount; i++) //-1 because car number one is already on track
@@ -54,6 +53,7 @@ namespace Assets.Scripts
 
         private void StartEvaluation(Car[] crashedCars)
         {
+            geneticAlgorithm = new GeneticAlgorithm();
             Genotype[] genotypes = new Genotype[carAmount];
 
             for (var i = 0; i < crashedCars.Length; i++)

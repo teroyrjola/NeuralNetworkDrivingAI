@@ -5,18 +5,18 @@ using UnityEngine;
 public class CheckpointScript : MonoBehaviour
 {
     public int InitialReward;
-    public int RewardLeft;
+    public int ExtraRewardLeft;
     public int Index;
 
     public bool TakeExtraRewardIfAnyLeft()
     {
-        if (RewardLeft < 1) return false;
-        RewardLeft--;
+        if (ExtraRewardLeft < 1) return false;
+        ExtraRewardLeft--;
         return true;
     }
 
     public void SetRewardLeftToInitialValue()
     {
-        RewardLeft = InitialReward;
+        ExtraRewardLeft = InitialReward;
     }
 }

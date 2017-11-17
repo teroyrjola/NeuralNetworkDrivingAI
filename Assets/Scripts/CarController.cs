@@ -127,10 +127,10 @@ public class CarController : MonoBehaviour
     public void ResetSensors()
     {
             sensors[0].sensor.gameObject.transform.localPosition = new Vector3(0, 5.75f);
-            sensors[1].sensor.gameObject.transform.localPosition = new Vector3(2.5f, 5f);
-            sensors[2].sensor.gameObject.transform.localPosition = new Vector3(4f, 3f);
-            sensors[3].sensor.gameObject.transform.localPosition = new Vector3(-2.5f, 5f);
-            sensors[4].sensor.gameObject.transform.localPosition = new Vector3(-4f, 3f);
+            sensors[1].sensor.gameObject.transform.localPosition = new Vector3(2.25f, 5f);
+            sensors[2].sensor.gameObject.transform.localPosition = new Vector3(3.5f, 3.5f);
+            sensors[3].sensor.gameObject.transform.localPosition = new Vector3(-2.25f, 5f);
+            sensors[4].sensor.gameObject.transform.localPosition = new Vector3(-3.5f, 3.5f);
     }
 
     public void HideSensors()

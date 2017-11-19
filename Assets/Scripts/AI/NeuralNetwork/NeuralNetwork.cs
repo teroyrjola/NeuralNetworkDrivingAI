@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using Boo.Lang;
-using UnityEngine;
+﻿using System.Linq;
 
 namespace Assets.Scripts
 {

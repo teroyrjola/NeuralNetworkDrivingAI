@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Assets.Scripts.AI.GeneticAlgorithm;
+﻿using Assets.Scripts.AI.GeneticAlgorithm;
 using UnityEngine;
 
 namespace Assets.Scripts

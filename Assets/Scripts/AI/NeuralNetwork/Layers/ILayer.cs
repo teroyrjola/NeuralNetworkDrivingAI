@@ -1,6 +1,4 @@
-﻿using Boo.Lang;
-
-namespace Assets.Scripts
+﻿namespace Assets.Scripts
 {
     public interface ILayer
     {

@@ -1,6 +1,3 @@
-using System.Linq;
-using Boo.Lang;
-
 namespace Assets.Scripts.AI.GeneticAlgorithm
 {
     public class Genotype

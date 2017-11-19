@@ -1,6 +1,4 @@
-﻿
-
-using Assets.Scripts.AI.GeneticAlgorithm;
+﻿using Assets.Scripts.AI.GeneticAlgorithm;
 
 namespace Assets.Scripts.AI
 {

@@ -21,11 +21,11 @@ public class CameraController : MonoBehaviour
         if (firstRun) carToFollow = SimulationManagerScript.Instance.cars[0];
         foreach (var car in SimulationManagerScript.Instance.cars)
 	    {
-	        if (car.controller.nextCheckpoint > carToFollow.nextCheckpoint) carToFollow = car;
+	        if (car.Controller.nextCheckpoint > carToFollow.NextCheckpoint) carToFollow = car;
 	    }
 
-        transform.position = new Vector3(carToFollow.controller.GetComponent<Transform>().position.x,
-		    carToFollow.controller.GetComponent<Transform>().position.y, -15);
+        transform.position = new Vector3(carToFollow.Controller.GetComponent<Transform>().position.x,
+		    carToFollow.Controller.GetComponent<Transform>().position.y, -15);
 	    firstRun = false;
 	}
 }

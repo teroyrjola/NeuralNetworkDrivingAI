@@ -2,24 +2,21 @@
 {
     public class Car
     {
-        private static int idGenerator = 0;
+        private static int _idGenerator = 0;
 
-        private static int NextID
+        private static int NextId
         {
-            get { return idGenerator++; }
+            get { return _idGenerator++; }
         }
-    
 
-        public CarController controller;
-        public int nextCheckpoint;
-        public int carID;
+        public CarController Controller;
+        public int NextCheckpoint;
 
         public Car(CarController carController)
         {
-            controller = carController;
-            nextCheckpoint = 0;
-            carID = NextID;
-            carController.ID = carID;
+            Controller = carController;
+            NextCheckpoint = 0;
+            carController.ID = NextId;
         }
     }
 }

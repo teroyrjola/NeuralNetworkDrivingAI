@@ -57,15 +57,15 @@ namespace Assets.Scripts
 
             for (var i = 0; i < crashedCars.Length; i++)
             {
-                genotypes[i] = cars[i].controller.Agent.genotype;
+                genotypes[i] = cars[i].Controller.Agent.genotype;
             }
 
             Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
 
             for (int i = 0; i < cars.Length; i++)
             {
-                cars[i].controller.Agent.genotype = newGenotypes[i];
-                cars[i].controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
+                cars[i].Controller.Agent.genotype = newGenotypes[i];
+                cars[i].Controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
             }
             ResetCars();
             ResetCheckpoints();
@@ -73,7 +73,7 @@ namespace Assets.Scripts
 
         private Synapse[][] CopyNewWeightsFromGAToANN(Car car, Genotype genotype)
         {
-            Synapse[][] currentSynapses = car.controller.Agent.ANN.synapses;
+            Synapse[][] currentSynapses = car.Controller.Agent.ANN.synapses;
 
             for (int i = 0; i < currentSynapses.Length; i++)
             {
@@ -90,14 +90,14 @@ namespace Assets.Scripts
         {
             foreach (var car in cars)
             {
-                car.controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
-                car.controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
-                car.controller.Agent.IsAlive = true;
-                car.controller.Agent.CurrentGenFitness = 0;
-                car.controller.Agent.genotype.fitness = 0;
-                car.controller.timeSinceLastCheckpoint = 0;
-                car.controller.ResetSensors();
-                car.controller.ShowSensors();
+                car.Controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
+                car.Controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
+                car.Controller.Agent.IsAlive = true;
+                car.Controller.Agent.CurrentGenFitness = 0;
+                car.Controller.Agent.genotype.fitness = 0;
+                car.Controller.timeSinceLastCheckpoint = 0;
+                car.Controller.ResetSensors();
+                car.Controller.ShowSensors();
             }
         }
 

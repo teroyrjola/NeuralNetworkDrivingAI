@@ -6,21 +6,21 @@ namespace Assets.Scripts.AI
     {
         public NeuralNetwork ANN { get; set; }
 
-        public Genotype genotype { get; set; }
+        public Genotype Genotype { get; set; }
 
         public int CurrentGenFitness;
         public bool IsAlive;
 
         public Agent()
         {
-            ANN = new NeuralNetwork(SimulationManagerScript.Instance.numberOfHiddenLayers);
-            genotype = new Genotype(ANN.synapses);
+            ANN = new NeuralNetwork(SimulationManagerScript.Instance.NumberOfHiddenLayers);
+            Genotype = new Genotype(ANN.synapses);
             IsAlive = true;
         }
 
         public void SetGenotypeFitness()
         {
-            genotype.fitness = CurrentGenFitness;
+            Genotype.fitness = CurrentGenFitness;
         }
 
     }

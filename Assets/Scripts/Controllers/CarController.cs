@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    public bool userControl;
+    private readonly bool userControl;
     public float acceleration;
     public float steering;
     public float max_turningSpeed;
@@ -16,7 +16,7 @@ public class CarController : MonoBehaviour
 
     public double[] controllerInput;
 
-    internal Sensor[] sensors;
+    internal SensorStart[] SensorStarts;
     private Rigidbody2D rb;
 
     public Agent Agent { get; set; }
@@ -26,8 +26,8 @@ public class CarController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        sensors = GetComponentsInChildren<Sensor>();
-        foreach (var sensor in sensors)
+        SensorStarts = GetComponentsInChildren<SensorStart>();
+        foreach (var sensor in SensorStarts)
         {
             sensor.active = true;
         }
@@ -62,10 +62,10 @@ public class CarController : MonoBehaviour
             float horizontal;
             if (!userControl)
             {
-                double[] sensorInput = new double[sensors.Length];
-                for (int i = 0; i < sensors.Length; i++)
+                double[] sensorInput = new double[SensorStarts.Length];
+                for (int i = 0; i < SensorStarts.Length; i++)
                 {
-                    sensorInput[i] = sensors[i].Output;
+                    sensorInput[i] = SensorStarts[i].Output;
                 }
 
                 Agent.ANN.SetInputLayer(sensorInput);
@@ -93,12 +93,10 @@ public class CarController : MonoBehaviour
             if (direction >= 0.0f)
             {
                 rb.rotation += horizontal * steering * (rb.velocity.magnitude / 50.0f);
-                //rb.AddTorque((h * steering) * (rb.velocity.magnitude / 10.0f));
             }
             else
             {
                 rb.rotation -= horizontal * steering * (rb.velocity.magnitude / 50.0f);
-                //rb.AddTorque((-h * steering) * (rb.velocity.magnitude / 10.0f));
             }
 
             Vector2 forward = new Vector2(0.0f, 0.5f);
@@ -124,28 +122,28 @@ public class CarController : MonoBehaviour
 
     public void ResetSensors()
     {
-            sensors[0].sensor.gameObject.transform.localPosition = new Vector3(0, 5.75f);
-            sensors[1].sensor.gameObject.transform.localPosition = new Vector3(2.25f, 5f);
-            sensors[2].sensor.gameObject.transform.localPosition = new Vector3(3.5f, 3.5f);
-            sensors[3].sensor.gameObject.transform.localPosition = new Vector3(-2.25f, 5f);
-            sensors[4].sensor.gameObject.transform.localPosition = new Vector3(-3.5f, 3.5f);
+            SensorStarts[0].SensorEnd.gameObject.transform.localPosition = new Vector3(0, 5.75f);
+            SensorStarts[1].SensorEnd.gameObject.transform.localPosition = new Vector3(2.25f, 5f);
+            SensorStarts[2].SensorEnd.gameObject.transform.localPosition = new Vector3(3.5f, 3.5f);
+            SensorStarts[3].SensorEnd.gameObject.transform.localPosition = new Vector3(-2.25f, 5f);
+            SensorStarts[4].SensorEnd.gameObject.transform.localPosition = new Vector3(-3.5f, 3.5f);
     }
 
     public void HideSensors()
     {
-        foreach (var sensor in sensors)
+        foreach (var sensor in SensorStarts)
         {
             sensor.active = false;
-            sensor.sensor.gameObject.SetActive(false);
+            sensor.SensorEnd.gameObject.SetActive(false);
         }
     }
 
     public void ShowSensors()
     {
-        foreach (var sensor in sensors)
+        foreach (var sensor in SensorStarts)
         {
             sensor.active = true;
-            sensor.sensor.gameObject.SetActive(true);
+            sensor.SensorEnd.gameObject.SetActive(true);
         }
     }
 }

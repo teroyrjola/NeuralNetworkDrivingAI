@@ -6,27 +6,27 @@ namespace Assets.Scripts
     public class SimulationManagerScript : MonoBehaviour
     {
         public static SimulationManagerScript Instance { get; private set; }
-        public GeneticAlgorithm geneticAlgorithm;
-        public int carAmount;
-        public int numberOfHiddenLayers;
-        public int numberOfNeuronsPerHiddenLayer;
+        public GeneticAlgorithm GeneticAlgorithm;
+        public int CarAmount;
+        public int NumberOfHiddenLayers;
+        public int NumberOfNeuronsPerHiddenLayer;
         public int AmountOfBestGenotypesForParents;
         public double MutationProbability;
         public double MutationAmount;
-        private int CarsCrashed;
-        public GameObject firstCar;
-        public GameObject checkpoints;
+        private int _carsCrashed;
+        public GameObject FirstCar;
+        public GameObject Checkpoints;
 
         public Car[] cars;
 
         void Awake()
         {
             Instance = this;
-            cars = new Car[carAmount];
+            cars = new Car[CarAmount];
 
-            for (int i = 0; i < carAmount; i++) //-1 because car number one is already on track
+            for (int i = 0; i < CarAmount; i++)
             {
-                GameObject newCar = Instantiate(firstCar.gameObject);
+                GameObject newCar = Instantiate(FirstCar.gameObject);
 
                 newCar.transform.position = newCar.transform.localPosition;
                 newCar.transform.rotation = newCar.transform.localRotation;
@@ -34,37 +34,37 @@ namespace Assets.Scripts
                 cars[i] = (new Car(newController));
                 newCar.SetActive(true);
             }
-            firstCar.SetActive(false);
+            FirstCar.SetActive(false);
 
             ResetCheckpoints();
         }
 
         public void CarCrash()
         {
-            CarsCrashed++;
+            _carsCrashed++;
 
-            if (CarsCrashed == carAmount)
+            if (_carsCrashed == CarAmount)
             {
                 StartEvaluation(cars);
-                CarsCrashed = 0;
+                _carsCrashed = 0;
             }
         }
 
         private void StartEvaluation(Car[] crashedCars)
         {
-            geneticAlgorithm = new GeneticAlgorithm();
-            Genotype[] genotypes = new Genotype[carAmount];
+            GeneticAlgorithm = new GeneticAlgorithm();
+            Genotype[] genotypes = new Genotype[CarAmount];
 
             for (var i = 0; i < crashedCars.Length; i++)
             {
-                genotypes[i] = cars[i].Controller.Agent.genotype;
+                genotypes[i] = cars[i].Controller.Agent.Genotype;
             }
 
-            Genotype[] newGenotypes = geneticAlgorithm.Start(genotypes);
+            Genotype[] newGenotypes = GeneticAlgorithm.Start(genotypes);
 
             for (int i = 0; i < cars.Length; i++)
             {
-                cars[i].Controller.Agent.genotype = newGenotypes[i];
+                cars[i].Controller.Agent.Genotype = newGenotypes[i];
                 cars[i].Controller.Agent.ANN.synapses = CopyNewWeightsFromGAToANN(cars[i], newGenotypes[i]);
             }
             ResetCars();
@@ -90,11 +90,11 @@ namespace Assets.Scripts
         {
             foreach (var car in cars)
             {
-                car.Controller.GetComponentInParent<Transform>().position = firstCar.transform.position;
-                car.Controller.GetComponentInParent<Transform>().rotation = firstCar.transform.rotation;
+                car.Controller.GetComponentInParent<Transform>().position = FirstCar.transform.position;
+                car.Controller.GetComponentInParent<Transform>().rotation = FirstCar.transform.rotation;
                 car.Controller.Agent.IsAlive = true;
                 car.Controller.Agent.CurrentGenFitness = 0;
-                car.Controller.Agent.genotype.fitness = 0;
+                car.Controller.Agent.Genotype.fitness = 0;
                 car.Controller.timeSinceLastCheckpoint = 0;
                 car.Controller.ResetSensors();
                 car.Controller.ShowSensors();
@@ -103,7 +103,7 @@ namespace Assets.Scripts
 
         private void ResetCheckpoints()
         {
-            foreach (var checkpoint in checkpoints.GetComponentsInChildren<CheckpointScript>())
+            foreach (var checkpoint in Checkpoints.GetComponentsInChildren<CheckpointScript>())
             {
                 checkpoint.SetRewardLeftToInitialValue();
             }

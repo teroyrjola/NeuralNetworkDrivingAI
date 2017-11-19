@@ -4,8 +4,10 @@ namespace Assets.Scripts
 {
     public class NeuralNetwork
     {
-        private readonly Neuron BiasNeuron;
-        public readonly int numberOfHiddenLayerNeurons = SimulationManagerScript.Instance.numberOfNeuronsPerHiddenLayer;
+        private readonly Neuron BiasNeuron = new Neuron(1);
+        private readonly int NumberOfInputNeurons = 5; //5 sensors on the car
+        private readonly int NumberOfOutputNeurons = 2; //horizontal and vertical
+        public readonly int numberOfHiddenLayerNeurons = SimulationManagerScript.Instance.NumberOfNeuronsPerHiddenLayer;
 
         public static double bias;
         //public int hiddenLayers;
@@ -23,12 +25,12 @@ namespace Assets.Scripts
         private void InitializeLayers(int hiddenLayers)
         {
             layers = new ILayer[2 + hiddenLayers];
-            layers[0] = new InputLayer(5);
+            layers[0] = new InputLayer(NumberOfInputNeurons);
             for (int i = 1; i < hiddenLayers +1 ; i++)
             {
                 layers[i] = new HiddenLayer(numberOfHiddenLayerNeurons);
             }
-            layers[layers.Length -1] = (new OutputLayer(2));
+            layers[layers.Length -1] = (new OutputLayer(NumberOfOutputNeurons));
         }
 
         //intialize a random weight between neurons in layers next to eachother
@@ -44,12 +46,12 @@ namespace Assets.Scripts
                 {
                     for (int k = 0; k < layers[i + 1].neurons.Length-1; k++)
                     {
-                        layerOfSynapses[j] = (new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]));
+                        layerOfSynapses[j] = new Synapse(layers[i].neurons[j], layers[i + 1].neurons[k]);
                     }
                 }
                 for (int j = 0; j < layers[i + 1].neurons.Length - 1; j++)
                 {
-                    layerOfSynapses[layerOfSynapses.Length -1] = (new Synapse(BiasNeuron, layers[i + 1].neurons[j])); //bias
+                    layerOfSynapses[layerOfSynapses.Length -1] = new Synapse(BiasNeuron, layers[i + 1].neurons[j]); //bias
                 }
                 synapses[i] = (layerOfSynapses);
             }

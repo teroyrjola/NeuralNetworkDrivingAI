@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Assets.Scripts
 {
@@ -16,6 +17,19 @@ namespace Assets.Scripts
             if (value > 10) return 1.0;
             else if (value < -10) return -1.0;
             else return 1.0 / (1.0 + Math.Exp(-value));
+        }
+
+        public static float ParseTimeFromGUI(string time)
+        {
+            try
+            {
+                float bestTime = float.Parse(time.Remove(0, 11), CultureInfo.InvariantCulture);
+                return bestTime;
+            }
+            catch (FormatException e)
+            {
+                return 100f;
+            }
         }
     }
 }

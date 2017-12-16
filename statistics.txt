@@ -1,0 +1,18 @@
+
+hiddenLayers 1
+neuronsPerLayer 5
+bestGenotypesForParents 2
+mutationProbability 0.2
+mutationAmount 0.2
+Time: 15.98977
+
+
+hiddenLayers 1
+neuronsPerLayer 5
+bestGenotypesForParents 2
+mutationProbability 0.2
+mutationAmount 0.2
+Time: 16.68004
+
+Time: 16.68004
+Generation: 6

@@ -1,10 +1,20 @@
-﻿using Assets.Scripts;
+﻿using System;
+using System.IO;
+using System.Net.NetworkInformation;
+using Assets.Scripts;
 using Assets.Scripts.AI;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+
     private readonly bool userControl;
+    private bool saveStatistics;
+    private readonly string pathToStatisticsFile = @"C:\Users\Tero\Desktop\Ai oot koulu\Kandi\Koodi\NeuralNetworkDrivingAI\statistics.txt";
+    private bool firstStatistics;
+    private float bestTimeThisRun = 100f;
+    public GUIController gui;
+
     public float acceleration;
     public float steering;
     public float max_turningSpeed;
@@ -13,6 +23,7 @@ public class CarController : MonoBehaviour
     public int ID;
     public float maxTimeBetweenCheckpoints = 3;
     public float timeSinceLastCheckpoint = 0;
+    public int amountOfCheckpoints;
 
     public double[] controllerInput;
 
@@ -25,6 +36,12 @@ public class CarController : MonoBehaviour
 
     void Start()
     {
+
+        amountOfCheckpoints = SimulationManagerScript.Instance.Checkpoints.GetComponent<Transform>().childCount;
+        saveStatistics =  SimulationManagerScript.Instance.saveStatistics;
+        firstStatistics = SimulationManagerScript.Instance.firstStatistics;
+        gui = SimulationManagerScript.Instance.Gui;
+
         rb = GetComponent<Rigidbody2D>();
         SensorStarts = GetComponentsInChildren<SensorStart>();
         foreach (var sensor in SensorStarts)
@@ -43,15 +60,51 @@ public class CarController : MonoBehaviour
 
             if (timeSinceLastCheckpoint > maxTimeBetweenCheckpoints)
             {
-                GetComponent<Rigidbody2D>().angularVelocity = 0;
-                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-                GetComponent<CarController>().Agent.SetGenotypeFitness();
-                GetComponent<CarController>().Agent.IsAlive = false;
-                GetComponent<CarController>().nextCheckpoint = 0;
-                GetComponent<CarController>().HideSensors();
-                SimulationManagerScript.Instance.CarCrash();
+                CarCrash();
+            }
+            if (GetComponent<CarController>().nextCheckpoint == amountOfCheckpoints)
+            {
+                if (saveStatistics)
+                {
+                    Statistics(SimulationManagerScript.Instance.Gui.TimeCounter.text, SimulationManagerScript.Instance.Gui.GenCounter.text);
+                 }
+                CarCrash();
             }
         }
+    }
+
+    private void Statistics(string timeCounterText, string genCounterText)
+    {
+        float time = HelperFunc.ParseTimeFromGUI(timeCounterText);
+        if (firstStatistics)
+        {
+            firstStatistics = false;
+            string[] currentRunInfo = SimulationManagerScript.Instance.GetCurrentRunInfo();
+            string stringInfo = "\n";
+            foreach (var stringData in currentRunInfo)
+            {
+                stringInfo += stringData + "\n";
+            }
+            stringInfo += timeCounterText + "\n" + "\n";
+            File.AppendAllText(pathToStatisticsFile, stringInfo);
+        }
+
+        if (time < gui.GetCurrentBestTime())
+        {
+            File.AppendAllText(pathToStatisticsFile, timeCounterText + "\n" + genCounterText + "\n");
+            gui.SetCurrentBestTime(time);
+        }
+    }
+
+    void CarCrash()
+    {
+        GetComponent<Rigidbody2D>().angularVelocity = 0;
+        GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        GetComponent<CarController>().Agent.SetGenotypeFitness();
+        GetComponent<CarController>().Agent.IsAlive = false;
+        GetComponent<CarController>().nextCheckpoint = 0;
+        GetComponent<CarController>().HideSensors();
+        SimulationManagerScript.Instance.CarCrash();
     }
 
     void FixedUpdate()

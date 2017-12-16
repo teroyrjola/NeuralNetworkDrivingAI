@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 namespace Assets.Scripts.AI.GeneticAlgorithm
@@ -71,7 +73,6 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                 for (int j = 0; j < bestPreviousGenotypes[0].Weights[i].Length; j++)
                 {
                     weightLayer[j] = CalculateNextWeight(bestPreviousGenotypes, i, j);
-
                 }
 
                 newWeights[i] = (weightLayer);
@@ -96,13 +97,14 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                 sumOfFitnessSoFar += genotype.fitness;
                 if (randomFactor < sumOfFitnessSoFar) return genotype.Weights[i][j];
             }
+            Debug.Log("Error in genetic algorithm: sum of fitnesses never reched total fitness.");
             return 0;
         }
 
-        public Genotype[] MutatePopulation(Genotype[] newGenotypes)
+        private Genotype[] MutatePopulation(Genotype[] newGenotypes)
         {
-            var mutationMIN = (float)(-MutationAmount / 2.0f);
-            var mutationMAX = (float)(MutationAmount / 2.0f);
+            float mutationMin = (float)(-MutationAmount / 2.0f);
+            float mutationMax = (float)(MutationAmount / 2.0f);
 
             foreach (Genotype genotype in newGenotypes)
             {
@@ -114,7 +116,7 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
                     {
                         if (Random.value < MutationProbability)
                         {
-                            layer[j] += Random.Range(mutationMIN, mutationMAX);
+                            layer[j] += Random.Range(mutationMin, mutationMax);
                         }
                     }
                 }
@@ -122,7 +124,6 @@ namespace Assets.Scripts.AI.GeneticAlgorithm
 
             if (ExtraRandomizationBeforeMinFitness)
             {
-                PercentOfRandomGenotypes = 50;
                 Debug.Log("Fitness score too low after five generations. Starting to randomize more.");
 
                 int numberOfRandomGenotypes = (int)(newGenotypes.Length * (PercentOfRandomGenotypes / 100.0));

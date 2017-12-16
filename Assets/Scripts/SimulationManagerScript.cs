@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.AI.GeneticAlgorithm;
+﻿using System.Collections.Generic;
+using Assets.Scripts.AI.GeneticAlgorithm;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -7,6 +8,9 @@ namespace Assets.Scripts
     {
         public static SimulationManagerScript Instance { get; private set; }
         public GeneticAlgorithm GeneticAlgorithm;
+        public bool saveStatistics;
+        public bool firstStatistics;
+
         public int CarAmount;
         public int NumberOfHiddenLayers;
         public int NumberOfNeuronsPerHiddenLayer;
@@ -16,6 +20,7 @@ namespace Assets.Scripts
         private int _carsCrashed;
         public GameObject FirstCar;
         public GameObject Checkpoints;
+        public GUIController Gui;
 
         public Car[] cars;
 
@@ -53,6 +58,10 @@ namespace Assets.Scripts
         private void StartEvaluation(Car[] crashedCars)
         {
             GeneticAlgorithm = new GeneticAlgorithm();
+            if (GeneticAlgorithm.CurrentGeneration == 25)
+            {
+                Debug.Break();
+            }
             Genotype[] genotypes = new Genotype[CarAmount];
 
             for (var i = 0; i < crashedCars.Length; i++)
@@ -69,6 +78,13 @@ namespace Assets.Scripts
             }
             ResetCars();
             ResetCheckpoints();
+            UpdateGui();
+        }
+
+        private void UpdateGui()
+        {
+            Gui.ResetTime();
+            Gui.IncrementCurrentGen();
         }
 
         private Synapse[][] CopyNewWeightsFromGAToANN(Car car, Genotype genotype)
@@ -107,6 +123,18 @@ namespace Assets.Scripts
             {
                 checkpoint.SetRewardLeftToInitialValue();
             }
+        }
+
+        public string[] GetCurrentRunInfo()
+        {
+            string[] currentRunInfo = new string[5];
+            currentRunInfo[0] = "hiddenLayers "+  NumberOfHiddenLayers;
+            currentRunInfo[1] = "neuronsPerLayer " + NumberOfNeuronsPerHiddenLayer;
+            currentRunInfo[2] = "bestGenotypesForParents " + AmountOfBestGenotypesForParents;
+            currentRunInfo[3] = "mutationProbability " + MutationProbability;
+            currentRunInfo[4] = "mutationAmount " + MutationAmount;
+
+            return currentRunInfo;
         }
     }
 }

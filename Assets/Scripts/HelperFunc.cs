@@ -23,7 +23,8 @@ namespace Assets.Scripts
         {
             try
             {
-                float bestTime = float.Parse(time.Remove(0, 11), CultureInfo.InvariantCulture);
+                string stringTime = time.Replace("Best time: ", " ").Replace("Time: ", " ");
+                float bestTime = float.Parse(stringTime, CultureInfo.InvariantCulture);
                 return bestTime;
             }
             catch (FormatException e)

@@ -39,7 +39,6 @@ public class CarController : MonoBehaviour
 
         amountOfCheckpoints = SimulationManagerScript.Instance.Checkpoints.GetComponent<Transform>().childCount;
         saveStatistics =  SimulationManagerScript.Instance.saveStatistics;
-        firstStatistics = SimulationManagerScript.Instance.firstStatistics;
         gui = SimulationManagerScript.Instance.Gui;
 
         rb = GetComponent<Rigidbody2D>();
@@ -75,23 +74,24 @@ public class CarController : MonoBehaviour
 
     private void Statistics(string timeCounterText, string genCounterText)
     {
+        firstStatistics = SimulationManagerScript.Instance.firstStatistics;
         float time = HelperFunc.ParseTimeFromGUI(timeCounterText);
         if (firstStatistics)
         {
-            firstStatistics = false;
+            SimulationManagerScript.Instance.firstStatistics = false;
             string[] currentRunInfo = SimulationManagerScript.Instance.GetCurrentRunInfo();
-            string stringInfo = "\n";
+            string stringInfo = "\nNEW DATA\n";
             foreach (var stringData in currentRunInfo)
             {
                 stringInfo += stringData + "\n";
             }
-            stringInfo += timeCounterText + "\n" + "\n";
+            stringInfo += timeCounterText + "\n" + genCounterText + "\n";
             File.AppendAllText(pathToStatisticsFile, stringInfo);
         }
 
         if (time < gui.GetCurrentBestTime())
         {
-            File.AppendAllText(pathToStatisticsFile, timeCounterText + "\n" + genCounterText + "\n");
+            File.AppendAllText(pathToStatisticsFile, timeCounterText + "\t" + genCounterText + "\n");
             gui.SetCurrentBestTime(time);
         }
     }

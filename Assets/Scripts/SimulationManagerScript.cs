@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Assets.Scripts.AI.GeneticAlgorithm;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
@@ -58,9 +59,9 @@ namespace Assets.Scripts
         private void StartEvaluation(Car[] crashedCars)
         {
             GeneticAlgorithm = new GeneticAlgorithm();
-            if (GeneticAlgorithm.CurrentGeneration == 25)
+            if (GeneticAlgorithm.CurrentGeneration == 24)
             {
-                Debug.Break();
+                SceneManager.LoadScene("TrackScene");
             }
             Genotype[] genotypes = new Genotype[CarAmount];
 

@@ -37,8 +37,8 @@ public class GUIController : MonoBehaviour
         return HelperFunc.ParseTimeFromGUI(BestTime.text);
     }
 
-    public void SetCurrentBestTime(float time)
+    public void SetCurrentBestTime(float newBestTime)
     {
-        BestTime.text = time.ToString();
+        BestTime.text = "Best time: " + newBestTime;
     }
 }
